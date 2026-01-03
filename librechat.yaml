@@ -413,6 +413,20 @@ endpoints:
       dropParams:
         ["frequency_penalty", "logit_bias", "presence_penalty", "service_tier"]
 
+    - name: "Baseten"
+      # For `apiKey` and `baseURL`, you can use environment variables that you define.
+      # recommended environment variables:
+      apiKey: "${BASETEN_API_KEY}"
+      baseURL: "https://inference.baseten.co/v1"
+      headers:
+        x-librechat-body-parentmessageid: "{{LIBRECHAT_BODY_PARENTMESSAGEID}}"
+      models:
+        default: ["deepseek-ai/DeepSeek-V3.2"]
+        fetch: true
+      titleConvo: true
+      modelDisplayLabel: "BaseTen"
+      iconURL: https://openrouter.ai/images/icons/baseten-favicon.svg
+
     # Helicone Example
     - name: "Helicone"
       # For `apiKey` and `baseURL`, you can use environment variables that you define.

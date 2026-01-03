@@ -94,6 +94,7 @@ services:
       - FIRECRAWL_API_KEY
       - JINA_API_KEY
       - SERPER_API_KEY
+      - BASETEN_API_KEY
       - SEARCH
 
     image: ghcr.io/danny-avila/librechat:latest
