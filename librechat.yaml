@@ -589,10 +589,11 @@ memory:
   # (optional) Restrict memory keys to specific values to limit memory storage and improve consistency
   # validKeys: ["preferences", "work_info", "personal_info", "skills", "interests", "context"]
   # (optional) Maximum token limit for memory storage (not yet implemented for token counting)
-  tokenLimit: 2000
+  tokenLimit: 20000
   # (optional) Enable personalization features (defaults to true if memory is configured)
   # When false, users will not see the Personalization tab in settings
   personalize: true
+  messageWindowSize: 5
   # Memory agent configuration - either use an existing agent by ID or define inline
   agent:
     # Option 1: Use existing agent by ID
@@ -600,6 +601,9 @@ memory:
     # Option 2: Define agent inline
     provider: "Baseten"
     model: "deepseek-ai/DeepSeek-V3.2"
-    instructions: "You are a memory management assistant. Store and manage user information accurately."
+    instructions: |
+      Store information only in the specified validKeys categories.
+      Focus on explicitly stated preferences and important facts.
+      Delete outdated or corrected information promptly.
     model_parameters:
       temperature: 0.1
