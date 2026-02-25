@@ -441,6 +441,20 @@ endpoints:
       modelDisplayLabel: "Gemini"
       iconURL: https://raw.githubusercontent.com/lobehub/lobe-icons/refs/heads/master/packages/static-png/light/gemini-color.png
 
+    - name: "SiliconFlow"
+      # For `apiKey` and `baseURL`, you can use environment variables that you define.
+      # recommended environment variables:
+      apiKey: "${SILICONFLOW_API_KEY}"
+      baseURL: https://api.siliconflow.com/v1
+      headers:
+        x-librechat-body-parentmessageid: "{{LIBRECHAT_BODY_PARENTMESSAGEID}}"
+      models:
+        default: ["MiniMaxAI/MiniMax-M2.5"]
+        fetch: true
+      titleConvo: true
+      modelDisplayLabel: "SiliconFlow"
+      iconURL: https://cloud.siliconflow.com/favicon.ico
+
 # Example modelSpecs configuration showing grouping options
 # The 'group' field organizes model specs in the UI selector:
 # - If 'group' matches an endpoint name (e.g., "openAI", "groq"), the spec appears nested under that endpoint
