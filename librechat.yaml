@@ -317,6 +317,12 @@ endpoints:
       #   claude-sonnet-4: true  # Will use the default deploymentName
       #   claude-3.5-haiku:
       #     deploymentName: claude-3-5-haiku@20241022  # Override for this model
+  bedrock:
+    availableRegions:
+      - "us-east-2"
+    inferenceProfiles:
+      "anthropic.claude-sonnet-4-6": "${BEDROCK_CLAUDE_SONNET_46_PROFILE}"
+      "anthropic.claude-opus-4-6-v1": "${BEDROCK_CLAUDE_OPUS_46_PROFILE}"
 
   custom:
     # Groq Example
