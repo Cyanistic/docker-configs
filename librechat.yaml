@@ -330,16 +330,12 @@ endpoints:
       apiKey: "${GROQ_API_KEY}"
       baseURL: "https://api.groq.com/openai/v1/"
       models:
-        default:
-          - "llama3-70b-8192"
-          - "llama3-8b-8192"
-          - "llama2-70b-4096"
-          - "mixtral-8x7b-32768"
-          - "gemma-7b-it"
-        fetch: false
+        default: ["mixtral-8x7b-32768"]
+        fetch: true
       titleConvo: true
       titleModel: "mixtral-8x7b-32768"
       modelDisplayLabel: "groq"
+      dropParams: ["logprobs", "logit_bias", "top_logprobs"]
 
     # Mistral AI Example
     - name: "Mistral" # Unique name for the endpoint
@@ -582,7 +578,7 @@ memory:
   disabled: false
   tokenLimit: 20000
   personalize: true
-  messageWindowSize: 5
+  messageWindowSize: 3
   validKeys:
     - "health"
     - "dietary"
