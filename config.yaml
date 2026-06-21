@@ -1,76 +1,5 @@
 # LiteLLM Configuration
 # See https://docs.litellm.ai/docs/proxy/configs
-#
-# OAuth providers (one-time login required via `docker exec`):
-#   ChatGPT:  docker exec litellm litellm chatgpt login
-#   xAI Grok: docker exec litellm litellm xai-oauth login
-#   Claude Max: run `claude setup-token` on your machine, pass token in client headers
-#
-# After OAuth login, tokens persist in the litellm-tokens volume.
-
-model_list:
-  # ── ChatGPT Subscription (OAuth device flow) ──
-  # Requires: `docker exec litellm litellm chatgpt login`
-  - model_name: chatgpt/gpt-5.4
-    litellm_params:
-      model: chatgpt/gpt-5.4
-  - model_name: chatgpt/gpt-5.3-codex
-    litellm_params:
-      model: chatgpt/gpt-5.3-codex
-
-  # ── xAI Grok Subscription (OAuth PKCE) ──
-  # Requires: `docker exec litellm litellm xai-oauth login`
-  - model_name: xai_oauth/grok-4
-    litellm_params:
-      model: xai_oauth/grok-4
-  - model_name: xai_oauth/grok-fast
-    litellm_params:
-      model: xai_oauth/grok-fast
-
-  # ── OpenAI API Key (pay-per-token fallback) ──
-  # Requires: OPENAI_API_KEY in .env
-  - model_name: openai/gpt-4o
-    litellm_params:
-      model: openai/gpt-4o
-      api_key: os.environ/OPENAI_API_KEY
-
-  # ── Anthropic API Key (pay-per-token fallback) ──
-  # Requires: ANTHROPIC_API_KEY in .env
-  # Claude Max OAuth: set forward_client_headers_to_llm_api (below)
-  # and pass sk-ant-oat01-... token from `claude setup-token` in your client
-  - model_name: anthropic/claude-sonnet
-    litellm_params:
-      model: anthropic/claude-sonnet-4-20250514
-      api_key: os.environ/ANTHROPIC_API_KEY
-
-  # ── Groq Free Tier ──
-  # Requires: GROQ_API_KEY in .env
-  - model_name: groq/llama-3.3-70b
-    litellm_params:
-      model: groq/llama-3.3-70b
-      api_key: os.environ/GROQ_API_KEY
-
-  # ── Gemini API Key ──
-  # Requires: GEMINI_API_KEY in .env
-  - model_name: gemini/gemini-flash
-    litellm_params:
-      model: gemini/gemini-2.0-flash
-      api_key: os.environ/GEMINI_API_KEY
-
-litellm_settings:
-  # Drop in replacement for openai/chat completions
-  drop_params: true
-  # Fallback chain: if primary 429s or errors, try next in list
-  fallbacks:
-    - chatgpt/gpt-5.4: [openai/gpt-4o, anthropic/claude-sonnet, groq/llama-3.3-70b]
-    - openai/gpt-4o: [anthropic/claude-sonnet, groq/llama-3.3-70b]
-    - xai_oauth/grok-4: [groq/llama-3.3-70b]
-  # Retry settings
-  num_retries: 3
-  request_timeout: 60
-  cooldown_time: 30
-  # Forward OAuth tokens from clients (for Claude Max et al.)
-  forward_client_headers_to_llm_api: true
 
 general_settings:
   # Master key for admin access to /ui and API
@@ -80,6 +9,6 @@ general_settings:
   # Rate limiting for public endpoints
   proxy_budget_rescheduler_min_time: 60
   # Allow users to view spend logs
-  allow_user_auth: false
+  allow_user_auth: true
   # UI access requires master key or virtual key
   ui_access_mode: "admin_only"
