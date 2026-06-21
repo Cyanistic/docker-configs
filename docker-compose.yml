@@ -9,7 +9,7 @@ services:
     restart: unless-stopped
     container_name: "redlib"
     ports:
-      - 127.0.0.1:6971:6971 # Specify `127.0.0.1:8080:8080` instead if using a reverse proxy
+      - 0.0.0.0:6971:6971 # Specify `127.0.0.1:8080:8080` instead if using a reverse proxy
     user: nobody
     read_only: true
     security_opt:
