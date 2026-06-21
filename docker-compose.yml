@@ -9,7 +9,8 @@ services:
       - ./config.yaml:/app/config.yaml:ro
       - litellm-data:/data
       - litellm-tokens:/root/.litellm
-    env_file: .env
+    # Env vars injected by Komodo -> see .env.example
+    # API keys in config.yaml use os.environ/VAR_NAME
     command:
       [
         "--config",
