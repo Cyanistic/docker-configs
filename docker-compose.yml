@@ -2,16 +2,26 @@ name: model-hotel
 
 services:
   app:
-    image: ghcr.io/hugalafutro/model-hotel:latest
+    # Builds natively for any platform (ARM, x86, etc.)
+    build:
+      context: https://github.com/hugalafutro/model-hotel.git
+      args:
+        VERSION: local
+    # Prebuilt image (amd64 only — needs QEMU on ARM):
+    # image: ghcr.io/hugalafutro/model-hotel:latest
     container_name: model-hotel
     labels:
       app.group: model-hotel
     ports:
-      - 127.0.0.1:4006:8080
+      - 0.0.0.0:4006:8080
     environment:
+      # Security
+      - ALLOWED_PROVIDER_HOSTS=${ALLOWED_PROVIDER_HOSTS:-localhost}
+      - CORS_ORIGINS=http://localhost:5173,http://localhost:8081
+      # Data
       - DATA_DIR=/data
     volumes:
       - ./.data:/data
-    restart: unless-stopped
     env_file:
       ./.env
+    restart: unless-stopped
