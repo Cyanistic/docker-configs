@@ -13,11 +13,10 @@ services:
     labels:
       app.group: model-hotel
     ports:
-      - 0.0.0.0:4006:8080
+      - 0.0.0.0:${HOST_PORT:-4006}:8080
     environment:
       # Security
-      - ALLOWED_PROVIDER_HOSTS=${ALLOWED_PROVIDER_HOSTS:-localhost}
-      - CORS_ORIGINS=http://localhost:5173,http://localhost:8081
+      - CORS_ORIGINS=http://localhost:5173,http://localhost:${HOST_PORT:-4006}
       # Data
       - DATA_DIR=/data
     volumes:
