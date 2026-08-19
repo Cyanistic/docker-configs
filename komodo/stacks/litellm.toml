@@ -1,0 +1,14 @@
+[[stack]]
+name = "litellm"
+description = "LiteLLM proxy"
+tags = ["app"]
+deploy = false
+[stack.config]
+server = "production"
+git_provider = "github.com"
+repo = "Cyanistic/docker-configs"
+branch = "main"
+run_directory = "services/litellm"
+file_paths = ["docker-compose.yml"]
+compose_cmd_wrapper = "secret-run -- [[COMPOSE_COMMAND]]"
+compose_cmd_wrapper_include = ["up"]

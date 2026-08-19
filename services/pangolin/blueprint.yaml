@@ -1,0 +1,39 @@
+# Applied by Pangolin (dashboard Settings > Blueprints, or the API/CLI).
+# Newt does not read this file. Newt only opens the tunnel.
+#
+# site: must match the Pangolin site name you typed when you created
+# the Newt site. Stacks assume "production".
+#
+# Targets are host ports on the same box as Newt.
+# LiteLLM is not public (not running). LibreChat is not listed yet.
+
+public-resources:
+  redlib:
+    name: Redlib
+    mode: http
+    full-domain: redlib.cyanistic.com
+    targets:
+      - site: production
+        hostname: host.docker.internal
+        port: 6971
+        method: http
+
+  model-hotel:
+    name: Model Hotel
+    mode: http
+    full-domain: llm.cyanistic.com
+    targets:
+      - site: production
+        hostname: host.docker.internal
+        port: 4006
+        method: http
+
+  komodo:
+    name: Komodo
+    mode: http
+    full-domain: komodo.cyanistic.com
+    targets:
+      - site: production
+        hostname: host.docker.internal
+        port: 9120
+        method: http

@@ -1,0 +1,30 @@
+################################
+# KOMODO CORE (Atlas, no local mongo)
+################################
+#
+# Periphery is a systemd unit from setup/periphery/setup-periphery.sh.
+# Started by setup/core/setup-core.sh via secret-run. Not a Resource Sync stack.
+# KOMODO_DATABASE_URI comes from Infisical (/komodo-core), not from this file.
+
+services:
+  core:
+    image: ghcr.io/moghtech/komodo-core:${COMPOSE_KOMODO_IMAGE_TAG:-2}
+    init: true
+    restart: unless-stopped
+    ports:
+      - 9120:9120
+    env_file: ./compose.env
+    environment:
+      # From Infisical /komodo-core via secret-run. Not in compose.env.
+      KOMODO_DATABASE_URI: ${KOMODO_DATABASE_URI}
+      KOMODO_JWT_SECRET: ${KOMODO_JWT_SECRET}
+      KOMODO_WEBHOOK_SECRET: ${KOMODO_WEBHOOK_SECRET}
+      KOMODO_INIT_ADMIN_PASSWORD: ${KOMODO_INIT_ADMIN_PASSWORD}
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    volumes:
+      - keys:/config/keys
+      - ${COMPOSE_KOMODO_BACKUPS_PATH}:/backups
+
+volumes:
+  keys:

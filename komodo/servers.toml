@@ -1,0 +1,12 @@
+# Servers are created by Periphery onboarding, not by this file.
+#
+# setup/periphery/setup-periphery.sh --connect-as production
+# attaches the machine to Core as the Server named "production".
+#
+# Stacks below target that name. Switching VPS providers means:
+#   1. bootstrap the new machine
+#   2. onboard Periphery as "production" again
+#   3. do not rewrite the stacks
+#
+# Do not put an IP or hostname here. Komodo v2 binds a Server to
+# cryptographic keys from the onboarding handshake.

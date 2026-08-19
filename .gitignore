@@ -1,0 +1,26 @@
+.DS_Store
+
+# Secrets and local env. Catalogs live in .env.defaults (committed).
+# .env is the Komodo overlay and stays untracked.
+**/.env
+!**/.env.example
+!**/.env.defaults
+
+# Runtime data
+**/.data/
+**/data-node/
+**/meili_data*/
+**/images/
+**/uploads/
+**/logs/
+**/pgdata*/
+
+# Pangolin runtime (created on first start)
+services/pangolin/config/db/
+services/pangolin/config/letsencrypt/
+services/pangolin/config/key
+services/pangolin/config/traefik/logs/
+services/pangolin/config/GeoLite2-Country.mmdb
+
+# Komodo Core local env
+services/komodo-core/compose.env

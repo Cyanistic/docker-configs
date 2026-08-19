@@ -1,0 +1,14 @@
+[[stack]]
+name = "librechat"
+description = "LibreChat"
+tags = ["app"]
+deploy = true
+[stack.config]
+server = "production"
+git_provider = "github.com"
+repo = "Cyanistic/docker-configs"
+branch = "main"
+run_directory = "services/librechat"
+file_paths = ["docker-compose.yml", "docker-compose.override.yml"]
+compose_cmd_wrapper = "secret-run -- [[COMPOSE_COMMAND]]"
+compose_cmd_wrapper_include = ["up"]

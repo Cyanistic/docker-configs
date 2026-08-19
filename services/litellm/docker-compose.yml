@@ -1,0 +1,37 @@
+services:
+  litellm:
+    build:
+      context: .
+      args:
+        target: runtime
+    image: docker.litellm.ai/berriai/litellm:main-stable
+    #########################################
+    ## Uncomment these lines to start proxy with a config.yaml file ##
+    # volumes:
+    #  - ./config.yaml:/app/config.yaml
+    # command:
+    #  - "--config=/app/config.yaml"
+    ##############################################
+    ports:
+      - 0.0.0.0:4005:4000 # Map the container port to the host, change the host port if necessary
+    environment:
+      STORE_MODEL_IN_DB: "True"
+      # Passed through from secret-run (Infisical path /litellm).
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY}
+      LITELLM_SALT_KEY: ${LITELLM_SALT_KEY}
+      DATABASE_URL: ${DATABASE_URL}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+    env_file:
+      - path: .env
+        required: false
+    healthcheck:  # Defines the health check configuration for the container
+      test:
+        - CMD-SHELL
+        - python3 -c "import urllib.request; urllib.request.urlopen('http://localhost:4000/health/liveliness')"  # Command to execute for health check
+      interval: 30s  # Perform health check every 30 seconds
+      timeout: 10s   # Health check command times out after 10 seconds
+      retries: 3     # Retry up to 3 times if health check fails
+      start_period: 40s  # Wait 40 seconds after container start before beginning health checks

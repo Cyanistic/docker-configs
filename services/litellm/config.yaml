@@ -1,0 +1,14 @@
+# LiteLLM Configuration
+# See https://docs.litellm.ai/docs/proxy/configs
+
+general_settings:
+  # Master key for admin access to /ui and API
+  master_key: os.environ/LITELLM_MASTER_KEY
+  # Salt key for encrypting stored credentials at rest
+  salt_key: os.environ/LITELLM_SALT_KEY
+  # Rate limiting for public endpoints
+  proxy_budget_rescheduler_min_time: 60
+  # Allow users to view spend logs
+  allow_user_auth: true
+  # UI access requires master key or virtual key
+  ui_access_mode: "admin_only"

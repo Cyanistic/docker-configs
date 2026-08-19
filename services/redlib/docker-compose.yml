@@ -1,0 +1,42 @@
+services:
+  redlib:
+    build:
+      context: https://github.com/chowder/redlib.git#feature/tls-openssl
+      # The Dockerfile: Which file inside that context describes the build
+      dockerfile: Dockerfile.alpine
+    environment:
+      PORT: 6971
+    restart: unless-stopped
+    container_name: "redlib"
+    ports:
+      - 0.0.0.0:6971:6971 # Specify `127.0.0.1:8080:8080` instead if using a reverse proxy
+    user: nobody
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+      # - seccomp=seccomp-redlib.json
+    cap_drop:
+      - ALL
+    # .env.defaults is the committed catalog. .env is the Komodo overlay
+    # (written only if the Environment box is non-empty). Later file wins.
+    env_file:
+      - .env.defaults
+      - path: .env
+        required: false
+    networks:
+      - redlib
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--spider",
+          "-q",
+          "--tries=1",
+          "http://localhost:6971/settings",
+        ]
+      interval: 5m
+      timeout: 3s
+
+networks:
+  redlib:

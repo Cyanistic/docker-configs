@@ -1,0 +1,29 @@
+name: model-hotel
+
+services:
+  app:
+    # Builds from a git ref so ARM works without a prebuilt image.
+    # Default is the current release tag. Override with GIT_REF (tag or branch)
+    # in the Komodo Environment box, then rebuild (git context is cached).
+    build:
+      context: https://github.com/hugalafutro/model-hotel.git#${GIT_REF:-v0.9.99}
+      args:
+        VERSION: ${GIT_REF:-v0.9.99}
+    container_name: model-hotel
+    labels:
+      app.group: model-hotel
+    ports:
+      - 0.0.0.0:${HOST_PORT:-4006}:8080
+    environment:
+      CORS_ORIGINS: http://localhost:5173,http://localhost:${HOST_PORT:-4006},https://llm.cyanistic.com
+      DATA_DIR: /data
+      MASTER_KEY: ${MASTER_KEY}
+      DATABASE_URL: ${DATABASE_URL}
+    # Komodo writes this from the stack Environment UI (machine-specific).
+    # required: false so a secret-run-only boot still works if the file is absent.
+    env_file:
+      - path: .env
+        required: false
+    volumes:
+      - ./.data:/data
+    restart: unless-stopped
