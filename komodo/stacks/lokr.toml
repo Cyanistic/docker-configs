@@ -1,0 +1,13 @@
+[[stack]]
+name = "lokr"
+description = "Lokr encrypted file sharing"
+tags = ["app"]
+deploy = false
+[stack.config]
+server = "production"
+git_provider = "github.com"
+repo = "Cyanistic/docker-configs"
+branch = "main"
+run_directory = "services/lokr"
+file_paths = ["docker-compose.yml"]
+auto_pull = true

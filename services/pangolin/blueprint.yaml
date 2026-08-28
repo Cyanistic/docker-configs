@@ -8,6 +8,16 @@
 # LiteLLM is not public (not running). LibreChat is not listed yet.
 
 public-resources:
+  lokr:
+    name: Lokr
+    mode: http
+    full-domain: lokr.cyanistic.com
+    targets:
+      - site: production
+        hostname: host.docker.internal
+        port: 6969
+        method: http
+
   redlib:
     name: Redlib
     mode: http
