@@ -10,5 +10,8 @@ repo = "Cyanistic/docker-configs"
 branch = "main"
 run_directory = "services/model-hotel"
 file_paths = ["docker-compose.yml"]
+# Model Hotel builds from a git context floating on GIT_REF;
+# force an image build on every deploy so redeploys can't silently reuse a stale image.
+extra_args = "--build"
 compose_cmd_wrapper = "secret-run -- [[COMPOSE_COMMAND]]"
 compose_cmd_wrapper_include = ["up"]
