@@ -47,3 +47,13 @@ public-resources:
         hostname: host.docker.internal
         port: 9120
         method: http
+
+  nitter:
+    name: Nitter
+    mode: http
+    full-domain: nitter.cyanistic.com
+    targets:
+      - site: production
+        hostname: host.docker.internal
+        port: 6972
+        method: http

@@ -24,6 +24,7 @@ Do this once, on the machine that will run Komodo.
    | `/librechat` | `MONGO_URI`, `CREDS_KEY`, and whatever the override interpolates |
    | `/pangolin` | `SERVER_SECRET` (`openssl rand -hex 32`, then leave it) |
    | `/newt` | `NEWT_ID`, `NEWT_SECRET` (from the Pangolin site you create) |
+   | `/shitter` | `SESSIONS_JSONL` (full `sessions.jsonl` content, one JSON object per line, from a burner Twitter login), `HMAC_KEY` (`openssl rand -hex 32`, signs media URLs) |
 
    In Atlas: allow this machine's IP. The URI stays in Infisical, not in git.
 
@@ -96,6 +97,7 @@ Komodo writes the Environment box to `.env` in the run directory. If the box is 
 
 | Dir | Notes |
 | --- | --- |
+| `services/shitter` | Nitter fork. `nitter.conf` + `sessions.jsonl` are rendered from Infisical `/shitter` on `up`; never in git. Template is `nitter.conf.template`. |
 | `services/redlib` | Instance config in `.env.defaults`. No secrets wrapper. |
 | `services/litellm` | Secrets from Infisical `/litellm`. |
 | `services/model-hotel` | Builds from source at `GIT_REF` (default `v0.9.99`). Force a rebuild after a bump. |

@@ -24,3 +24,7 @@ services/pangolin/config/GeoLite2-Country.mmdb
 
 # Komodo Core local env
 services/komodo-core/compose.env
+
+# Shitter deploy-rendered secrets (from Infisical /shitter via materialize-config.sh).
+services/shitter/sessions.jsonl
+services/shitter/nitter.conf
