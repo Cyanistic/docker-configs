@@ -1,7 +1,7 @@
 services:
   redlib:
     build:
-      context: https://github.com/chowder/redlib.git#feature/tls-openssl
+      context: https://github.com/redlib-org/redlib.git#main
       # The Dockerfile: Which file inside that context describes the build
       dockerfile: Dockerfile.alpine
     environment:
