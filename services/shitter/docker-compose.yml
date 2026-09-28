@@ -9,6 +9,9 @@ services:
       # Created from a burner Twitter login. See sessions.jsonl.example.
       # This file is gitignored — place it on the server manually, then deploy.
       - ./sessions.jsonl:/src/sessions.jsonl:Z,ro
+      # Custom Nord theme (committed, public-safe). Nitter lists every file
+      # in css/themes/ on /settings automatically, so this shows up as "Nord".
+      - ./nord.css:/src/public/css/themes/nord.css:Z,ro
     depends_on:
       - nitter-redis
     restart: unless-stopped

@@ -40,7 +40,7 @@ retryDelayMs = 150           # delay in ms between retries
 
 # Change default preferences here, see src/prefs_impl.nim for a complete list
 [Preferences]
-theme = "Nitter"
+theme = "Nord"  # custom css in nord.css, mounted into the image; shows up on /settings automatically
 replaceTwitter = "nitter.cyanistic.com"
 replaceYouTube = "piped.video"
 replaceReddit = "teddit.net"

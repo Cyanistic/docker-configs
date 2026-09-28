@@ -1,0 +1,49 @@
+/* Nord theme for Nitter. Colors from the Nord palette
+   (https://www.nordtheme.com/docs/colors-and-palettes):
+   Polar Night #2e3440 #3b4252 #434c5e #4c566a,
+   Snow Storm #d8dee9 #e5e9f0 #eceff4,
+   Frost #8fbcbb #88c0d0 #81a1c1 #5e81ac,
+   Aurora #bf616a #d08770 #ebcb8b #a3be8c #b48ead.
+   Structured after upstream's dracula.css: override the body-level
+   custom properties defined in src/sass/index.scss. */
+body {
+    --bg_color: #2e3440;
+    --fg_color: #eceff4;
+    --fg_faded: #d8dee9;
+    --fg_dark: var(--fg_faded);
+    --fg_nav: var(--accent);
+
+    --bg_panel: #3b4252;
+    --bg_elements: #2e3440;
+    --bg_overlays: #434c5e;
+    --bg_hover: #3b4252;
+
+    --grey: var(--fg_faded);
+    --dark_grey: #434c5e;
+    --darker_grey: #3b4252;
+    --darkest_grey: #2e3440;
+    --border_grey: #4c566a;
+
+    --accent: #88c0d0;
+    --accent_light: #8fbcbb;
+    --accent_dark: #5e81ac;
+    --accent_border: #88c0d096;
+
+    --play_button: #d08770;
+    --play_button_hover: #ebcb8b;
+
+    --more_replies_dots: #88c0d0;
+    --error_red: #bf616a;
+
+    --verified_blue: #81a1c1;
+    --icon_text: #2e3440;
+
+    --tab: #4c566a;
+    --tab_selected: var(--accent);
+
+    --profile_stat: #d8dee9;
+}
+
+.search-bar > form input::placeholder{
+    color: var(--fg_faded);
+}
