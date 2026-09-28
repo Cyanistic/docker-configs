@@ -1,109 +1,97 @@
 # docker-configs
 
-This repo is the server. Clone it, bootstrap Core, attach machines, then live in git.
+This repo contains the Compose files for the services I run and the Komodo configuration that deploys them. Service files are in `services/`, Komodo stacks are in `komodo/`, and `setup/` has scripts for preparing a new machine.
 
-You almost never click "New Stack" after the first day. Edit a file, commit, push. Komodo deploys it.
+## Making changes
 
+To change a service, edit its files, commit, and push to `main`. Then run the Resource Sync in Komodo, unless the GitHub webhook is set up to run it automatically. Komodo will update the stack on the server assigned to it in `komodo/stacks/`. You normally don’t need to create stacks in the UI.
+
+Passwords, API keys, and connection strings containing credentials belong in Infisical. Non-secret settings shared by every machine can go in the repo. Settings for one machine, such as `HOST_PORT` or `GIT_REF`, go in that stack’s Environment box in Komodo.
+
+Be careful with the Environment box: if you put anything in it, Komodo replaces the entire `.env` file in the stack’s run directory. If you leave it empty, Komodo leaves the file alone. Redlib keeps its shared settings in `.env.defaults` for this reason.
+
+## Setting up Core
+
+Core runs Komodo and manages the other machines. These steps are for a new Core machine; you only need to do them once.
+
+First, create a project in Infisical with a `prod` environment and add the secrets listed [below](#secrets). Services use folders named after their directories, so `services/litellm` reads from `/litellm`. In MongoDB Atlas, allow the Core machine’s IP. Keep the Atlas URI in Infisical, not in the repo.
+
+Clone this repo on the Core machine and run the setup script:
+
+```bash
+git clone git@github.com:Cyanistic/docker-configs.git
+cd docker-configs
+sudo ./setup/core/setup-core.sh
 ```
-services/   how each app runs (Compose)
-setup/      turn a blank Linux VM into a managed box
-komodo/     what those boxes should run
-```
 
-## First time (Core)
+The first run creates `/etc/secret-run/infisical.env`. Add `INFISICAL_PROJECT_ID` and either `INFISICAL_CLIENT_ID` and `INFISICAL_CLIENT_SECRET`, or a token. Then run the script again.
 
-Do this once, on the machine that will run Komodo.
+Set `KOMODO_HOST` and the other non-secret settings in `services/komodo-core/compose.env`, which the script copies from the example file. Open Core at `http://<this-host>:9120`, or at the address you set with `KOMODO_HOST`. The initial username is in the example file and the password is in Infisical. Log in and change the admin password.
 
-1. In Infisical (one project, env `prod`), make a folder per service dir and put the secrets there. Folder name = last part of the path (`services/litellm` -> `/litellm`).
+In Komodo, create an onboarding key for adding machines. This is a one-time invitation, not an Infisical secret or an API token. Also create a Resource Sync pointing at this repo, branch `main`, path `komodo`, and execute it. You can add a GitHub webhook later if you want pushes to run the sync automatically.
 
-   | Folder | At least |
-   | --- | --- |
-   | `/komodo-core` | `KOMODO_DATABASE_URI` (Atlas `mongodb+srv://...`), `KOMODO_JWT_SECRET`, `KOMODO_WEBHOOK_SECRET`, `KOMODO_INIT_ADMIN_PASSWORD` |
-   | `/litellm` | `LITELLM_MASTER_KEY`, `LITELLM_SALT_KEY`, `DATABASE_URL`, provider keys |
-   | `/model-hotel` | `MASTER_KEY`, `DATABASE_URL` |
-   | `/librechat` | `MONGO_URI`, `CREDS_KEY`, and whatever the override interpolates |
-   | `/pangolin` | `SERVER_SECRET` (`openssl rand -hex 32`, then leave it) |
-   | `/newt` | `NEWT_ID`, `NEWT_SECRET` (from the Pangolin site you create) |
-   | `/shitter` | `SESSIONS_JSONL` (full `sessions.jsonl` content, one JSON object per line, from a burner Twitter login), `HMAC_KEY` (`openssl rand -hex 32`, signs media URLs) |
+### Secrets
 
-   In Atlas: allow this machine's IP. The URI stays in Infisical, not in git.
+Use these folders in the Infisical `prod` environment:
 
-2. Clone and bootstrap:
+| Folder | Values |
+| --- | --- |
+| `/komodo-core` | `KOMODO_DATABASE_URI` (the Atlas `mongodb+srv://...` URI), `KOMODO_JWT_SECRET`, `KOMODO_WEBHOOK_SECRET`, `KOMODO_INIT_ADMIN_PASSWORD` |
+| `/litellm` | `LITELLM_MASTER_KEY`, `LITELLM_SALT_KEY`, `DATABASE_URL`, provider keys |
+| `/model-hotel` | `MASTER_KEY`, `DATABASE_URL` |
+| `/librechat` | `MONGO_URI`, `CREDS_KEY`, and any other values used by the Compose override |
+| `/pangolin` | `SERVER_SECRET` |
+| `/newt` | `NEWT_ID`, `NEWT_SECRET` |
+| `/shitter` | `SESSIONS_JSONL`, `HMAC_KEY` |
 
-   ```bash
-   git clone git@github.com:Cyanistic/docker-configs.git
-   cd docker-configs
-   sudo ./setup/core/setup-core.sh
-   ```
+Generate `SERVER_SECRET` and `HMAC_KEY` with `openssl rand -hex 32`. Don’t change Pangolin’s `SERVER_SECRET` later without using `pangctl rotate-server-secret`.
 
-   First run writes `/etc/secret-run/infisical.env`. Fill in a machine identity (`INFISICAL_CLIENT_ID` / `INFISICAL_CLIENT_SECRET`) or a token, plus `INFISICAL_PROJECT_ID`. Re-run the script.
+`SESSIONS_JSONL` is the full content of a `sessions.jsonl` file from a burner Twitter login, with one JSON object per line. Shitter renders that file and `nitter.conf` from Infisical when it starts. Neither rendered file should go in the repo.
 
-   Also edit `services/komodo-core/compose.env` (copied from the example): `KOMODO_HOST` and the non-secret knobs.
+## Adding a machine
 
-3. Open Core (`http://<this-host>:9120`, or whatever `KOMODO_HOST` is). Log in (username is in the example file; password is in Infisical). Change the admin password.
-
-4. Create an **onboarding key** in the UI. That is a one-time invite, not an Infisical secret and not an API token. Whoever shows up with it becomes a Server.
-
-5. Create one **Resource Sync**: this repo, branch `main`, path `komodo`. Execute it. Optionally add a GitHub webhook later so push deploys without clicking Execute.
-
-## Add a machine
-
-On every box that should run apps (including the Core host, if Core should manage itself):
+Run the Periphery setup script on each machine that should run services. You can also run it on the Core machine if you want Core to manage itself:
 
 ```bash
 sudo ./setup/periphery/setup-periphery.sh \
   --core-address 'wss://komodo.cyanistic.com' \
-  --onboarding-key '<the key from the UI>' \
+  --onboarding-key '<key from the Komodo UI>' \
   --connect-as production
 ```
 
-`--connect-as` is the Server **name** inside Komodo. Stacks in `komodo/stacks` all say `server = "production"`. Use that name for the main VPS, and for the next VPS when you move providers. You do not put an IP in git. After the handshake, throw the key away.
+`production` is the machine’s name in Komodo. The existing stacks target that name, so use it for the main VPS and for a replacement VPS if you move providers. Machine IPs don’t go in the stack files. Discard the onboarding key after the machine joins.
 
-A second machine that should stay distinct gets a different name (`home`, `gpu`, …). Only the stacks that should run there change `server =`.
+If you’re adding a separate machine that should keep its own name, use something like `home` or `gpu` instead. Change the `server` setting only for stacks that should run there.
 
 ## Pangolin and Newt
 
-Pangolin is the front door (`pangolin.cyanistic.com`). Newt is the tunnel on every box that runs apps. Same machine can run both.
+Pangolin handles the public addresses. Newt connects machines running services to Pangolin. They can run on the same machine.
 
-1. Put `SERVER_SECRET` in Infisical `/pangolin` (`openssl rand -hex 32`). Do not change it later without `pangctl rotate-server-secret`. Fill the Let's Encrypt email in `config/traefik/traefik_config.yml`. Deploy the Pangolin stack.
-2. In the Pangolin UI, create a **site** named `production`. Copy `NEWT_ID` / `NEWT_SECRET` into Infisical `/newt`.
-3. Deploy the Newt stack. It only opens the tunnel.
-4. Paste `services/pangolin/blueprint.yaml` into Pangolin (**Settings > Blueprints**), or apply it with the CLI/API. That file is what creates the public names.
+1. Put `SERVER_SECRET` in Infisical `/pangolin`, set the Let’s Encrypt email in `config/traefik/traefik_config.yml`, and deploy Pangolin.
+2. Create a site named `production` in Pangolin. Copy its `NEWT_ID` and `NEWT_SECRET` into Infisical `/newt`.
+3. Deploy Newt.
+4. Apply `services/pangolin/blueprint.yaml` under **Settings > Blueprints** in Pangolin, or use its CLI/API. The blueprint creates the public addresses for the services.
 
-| Public name | App | Host port |
+Point these DNS names at the Pangolin machine:
+
+| Address | Service | Host port |
 | --- | --- | --- |
-| `pangolin.cyanistic.com` | Pangolin dashboard (Traefik, not the blueprint) | 80/443 |
+| `pangolin.cyanistic.com` | Pangolin dashboard, through Traefik rather than the blueprint | 80/443 |
 | `redlib.cyanistic.com` | redlib | 6971 |
 | `llm.cyanistic.com` | model-hotel | 4006 |
 | `komodo.cyanistic.com` | Komodo Core | 9120 |
 
-LiteLLM is not on the internet. Point those DNS names at the Pangolin box.
+LiteLLM is not exposed publicly.
 
-## Day to day
+## Services
 
-- Change a compose file or a `komodo/stacks/*.toml`, commit, push `main`.
-- Core diffs the sync. Execute (or let the GitHub webhook do it).
-- Periphery on that Server runs compose. Stacks that need secrets go through `secret-run`, which opens the Infisical folder named after the service directory.
+- `services/shitter` is a Nitter fork. It renders `nitter.conf` and `sessions.jsonl` from Infisical `/shitter` when it starts. The config template is `nitter.conf.template`.
+- `services/redlib` keeps its instance settings in `.env.defaults` and doesn’t use the secrets wrapper.
+- `services/litellm` reads its secrets from Infisical `/litellm`.
+- `services/model-hotel` builds from source at `GIT_REF`, which defaults to `v0.9.99`. Force a rebuild after changing the ref.
+- `services/librechat` uses upstream Compose with our override and reads secrets from `/librechat`.
+- `services/pangolin` serves `cyanistic.com`; its public routes are in `blueprint.yaml`.
+- `services/newt` is the tunnel client and reads its credentials from `/newt`.
+- `services/komodo-core` is started by `setup-core.sh`, not by Resource Sync.
 
-**Where a value lives**
-
-- Secret (password, API key, URI with creds) -> Infisical.
-- Same on every box, not a secret -> git (compose or `.env.defaults`).
-- This box only (`HOST_PORT`, `GIT_REF`, extra CORS) -> that stack's Environment box in Komodo.
-
-Komodo writes the Environment box to `.env` in the run directory. If the box is empty, it leaves the file alone. If you type anything, it **replaces** the whole file. That is why redlib's catalog is `.env.defaults`, not `.env`.
-
-## Apps
-
-| Dir | Notes |
-| --- | --- |
-| `services/shitter` | Nitter fork. `nitter.conf` + `sessions.jsonl` are rendered from Infisical `/shitter` on `up`; never in git. Template is `nitter.conf.template`. |
-| `services/redlib` | Instance config in `.env.defaults`. No secrets wrapper. |
-| `services/litellm` | Secrets from Infisical `/litellm`. |
-| `services/model-hotel` | Builds from source at `GIT_REF` (default `v0.9.99`). Force a rebuild after a bump. |
-| `services/librechat` | Upstream compose + our override. Secrets from `/librechat`. |
-| `services/pangolin` | Front door. Domain is `cyanistic.com`. Blueprint in `blueprint.yaml`. |
-| `services/newt` | Tunnel client. Secrets from Infisical `/newt`. |
-| `services/komodo-core` | Core only. Started by `setup-core.sh`, not by Resource Sync. |
-
-Old per-service branches (`redlib`, `litellm`, `model-hotel`, `librechat`) are leftovers. Deploy from `main`.
+Deploy from `main`. The old `redlib`, `litellm`, `model-hotel`, and `librechat` branches are leftovers.
