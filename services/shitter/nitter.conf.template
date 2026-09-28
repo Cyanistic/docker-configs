@@ -42,8 +42,8 @@ retryDelayMs = 150           # delay in ms between retries
 [Preferences]
 theme = "Nord"  # custom css in nord.css, mounted into the image; shows up on /settings automatically
 replaceTwitter = "nitter.cyanistic.com"
-replaceYouTube = "piped.video"
-replaceReddit = "teddit.net"
+replaceReddit = "redlib.cyanistic.com"
+replaceYouTube = ""
 proxyVideos = false
 hlsPlayback = false
 infiniteScroll = false
