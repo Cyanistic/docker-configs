@@ -1,9 +1,7 @@
 services:
   redlib:
-    build:
-      context: https://github.com/redlib-org/redlib.git#main
-      # The Dockerfile: Which file inside that context describes the build
-      dockerfile: Dockerfile.alpine
+    image: quay.io/redlib/redlib:latest
+    pull_policy: always
     environment:
       PORT: 6971
     restart: unless-stopped
