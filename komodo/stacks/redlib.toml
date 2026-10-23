@@ -10,3 +10,5 @@ repo = "Cyanistic/docker-configs"
 branch = "main"
 run_directory = "services/redlib"
 file_paths = ["docker-compose.yml"]
+# Compile the fork natively on the deployment host.
+extra_args = "--build"
