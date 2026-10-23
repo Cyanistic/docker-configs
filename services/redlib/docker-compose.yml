@@ -1,6 +1,8 @@
 services:
   redlib:
-    image: quay.io/redlib/redlib:latest
+    # Official upstream image; restore this line to roll back the fork trial.
+    # image: quay.io/redlib/redlib:latest
+    image: ghcr.io/polak14/redlib:latest
     pull_policy: always
     environment:
       PORT: 6971
